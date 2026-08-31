@@ -5,18 +5,25 @@ namespace SI_300D.Services
 {
     public class NetworkInterfaceService
     {
-        public void GetNetworkInterfaces()
+        public List<NetworkInterfaceInfo> GetNetworkInterfaces()
         {
-            var interfaces = NetworkInterface.GetAllNetworkInterfaces();
+            var networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
 
-            foreach (var networkInterface in interfaces)
-            {
-                Console.WriteLine(networkInterface.Name);
-                Console.WriteLine(networkInterface.Description);
-                Console.WriteLine(networkInterface.NetworkInterfaceType);
-                Console.WriteLine(networkInterface.OperationalStatus);
-                Console.WriteLine(networkInterface.Speed);
-            }
+            return networkInterfaces
+                .Select(networkInterface => new NetworkInterfaceInfo
+                {
+                    Name = networkInterface.Name,
+                    Description = networkInterface.Description,
+                    Type = networkInterface.NetworkInterfaceType.ToString(),
+                    Status = networkInterface.OperationalStatus.ToString(),
+                    Speed = networkInterface.Speed,
+                    IpAddresses = networkInterface
+                        .GetIPProperties()
+                        .UnicastAddresses
+                        .Select(address => address.Address.ToString())
+                        .ToList()
+                })
+                .ToList();
         }
     }
 }
