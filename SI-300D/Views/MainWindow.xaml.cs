@@ -14,5 +14,15 @@ namespace SI_300D.Views
 
             DataContext = new MainViewModel();
         }
+
+        private async void StartMonitoring_Click(object sender, RoutedEventArgs e)
+        {
+            await ((MainViewModel)DataContext).StartMonitoringAsync();
+        }
+
+        private void StopMonitoring_Click(object sender, RoutedEventArgs e)
+        {
+            ((MainViewModel)DataContext).StopMonitoring();
+        }
     }
 }
