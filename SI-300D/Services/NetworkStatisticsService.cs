@@ -32,7 +32,7 @@ namespace SI_300D.Services
             };
         }
 
-        public async Task MonitorAsync(NetworkInterface networkInterface, CancellationToken cancellationToken)
+        public async IAsyncEnumerable<NetworkStatistics> MonitorAsync(NetworkInterface networkInterface, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
         {
             using var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
 
@@ -52,6 +52,8 @@ namespace SI_300D.Services
                     elapsedSeconds);
 
                 previous = current;
+
+                yield return statistics;
             }
         }
     }
