@@ -32,6 +32,8 @@ namespace SI_300D.ViewModels
 
         public string UploadSpeed => FormatBytesPerSecond(UploadBytesPerSecond);
 
+        public string InterfaceSpeedDisplay => FormatBitsPerSecond(InterfaceSpeed);
+
         public MainViewModel()
         {
             _networkStatisticsService = new NetworkStatisticsService();
@@ -112,6 +114,20 @@ namespace SI_300D.ViewModels
                 return $"{bytesPerSecond / (1024 * 1024):N1} MB/s";
 
             return $"{bytesPerSecond / (1024 * 1024 * 1024):N1} GB/s";
+        }
+
+        private static string FormatBitsPerSecond(long bitsPerSecond)
+        {
+            if (bitsPerSecond < 1_000)
+                return $"{bitsPerSecond:N0} bps";
+
+            if (bitsPerSecond < 1_000_000)
+                return $"{bitsPerSecond / 1_000.0:N1} Kbps";
+
+            if (bitsPerSecond < 1_000_000_000)
+                return $"{bitsPerSecond / 1_000_000.0:N1} Mbps";
+
+            return $"{bitsPerSecond / 1_000_000_000.0:N1} Gbps";
         }
     }
 }
