@@ -28,6 +28,10 @@ namespace SI_300D.ViewModels
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        public string DownloadSpeed => FormatBytesPerSecond(DownloadBytesPerSecond);
+
+        public string UploadSpeed => FormatBytesPerSecond(UploadBytesPerSecond);
+
         public MainViewModel()
         {
             _networkStatisticsService = new NetworkStatisticsService();
@@ -66,7 +70,10 @@ namespace SI_300D.ViewModels
                     UploadBytesPerSecond = statistics.UploadBytesPerSecond;
 
                     OnPropertyChanged(nameof(DownloadBytesPerSecond));
+                    OnPropertyChanged(nameof(DownloadSpeed));
+
                     OnPropertyChanged(nameof(UploadBytesPerSecond));
+                    OnPropertyChanged(nameof(UploadSpeed));
                 }
             }
             catch (OperationCanceledException)
@@ -91,6 +98,20 @@ namespace SI_300D.ViewModels
             PropertyChanged?.Invoke(
                 this,
                 new PropertyChangedEventArgs(propertyName));
+        }
+
+        private static string FormatBytesPerSecond(double bytesPerSecond)
+        {
+            if (bytesPerSecond < 1024)
+                return $"{bytesPerSecond:N0} B/s";
+
+            if (bytesPerSecond < 1024 * 1024)
+                return $"{bytesPerSecond / 1024:N1} KB/s";
+
+            if (bytesPerSecond < 1024 * 1024 * 1024)
+                return $"{bytesPerSecond / (1024 * 1024):N1} MB/s";
+
+            return $"{bytesPerSecond / (1024 * 1024 * 1024):N1} GB/s";
         }
     }
 }

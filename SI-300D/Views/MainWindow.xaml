@@ -91,7 +91,7 @@
                             Opacity="0.6"/>
 
                         <TextBlock
-                            Text="{Binding DownloadBytesPerSecond, StringFormat={}{0:N0} B/s}"
+                            Text="{Binding DownloadSpeed}"
                             FontSize="32"
                             FontWeight="SemiBold"
                             Margin="0,8,0,0"/>
@@ -119,7 +119,7 @@
                             Opacity="0.6"/>
 
                         <TextBlock
-                            Text="{Binding UploadBytesPerSecond, StringFormat={}{0:N0} B/s}"
+                            Text="{Binding UploadSpeed}"
                             FontSize="32"
                             FontWeight="SemiBold"
                             Margin="0,8,0,0"/>
