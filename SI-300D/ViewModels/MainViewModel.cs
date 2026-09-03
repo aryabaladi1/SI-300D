@@ -26,6 +26,10 @@ namespace SI_300D.ViewModels
 
         public bool IsMonitoring { get; private set; }
 
+        public bool CanStartMonitoring => !IsMonitoring;
+
+        public bool CanStopMonitoring => IsMonitoring;
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public string DownloadSpeed => FormatBytesPerSecond(DownloadBytesPerSecond);
@@ -33,6 +37,8 @@ namespace SI_300D.ViewModels
         public string UploadSpeed => FormatBytesPerSecond(UploadBytesPerSecond);
 
         public string InterfaceSpeedDisplay => FormatBitsPerSecond(InterfaceSpeed);
+
+        public string InterfaceStatusDisplay => InterfaceStatus == "Up" ? "● Connected" : "○ Disconnected";
 
         public MainViewModel()
         {
@@ -60,7 +66,10 @@ namespace SI_300D.ViewModels
             _monitoringCancellation = new CancellationTokenSource();
 
             IsMonitoring = true;
+
             OnPropertyChanged(nameof(IsMonitoring));
+            OnPropertyChanged(nameof(CanStartMonitoring));
+            OnPropertyChanged(nameof(CanStopMonitoring));
 
             try
             {
@@ -92,7 +101,10 @@ namespace SI_300D.ViewModels
             _monitoringCancellation?.Cancel();
 
             IsMonitoring = false;
+
             OnPropertyChanged(nameof(IsMonitoring));
+            OnPropertyChanged(nameof(CanStartMonitoring));
+            OnPropertyChanged(nameof(CanStopMonitoring));
         }
 
         private void OnPropertyChanged(string propertyName)

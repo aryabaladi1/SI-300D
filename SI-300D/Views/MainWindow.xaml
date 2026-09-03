@@ -6,7 +6,8 @@
         Height="600"
         Width="1000"
         MinHeight="500"
-        MinWidth="800">
+        MinWidth="800"
+        Background="#ECEFF1">
     <Window.Resources>
 
         <converters:BooleanToVisibilityConverter
@@ -18,8 +19,30 @@
         <Style x:Key="CardStyle" TargetType="Border">
             <Setter Property="CornerRadius" Value="12"/>
             <Setter Property="Padding" Value="25"/>
-            <Setter Property="Background" Value="#F5F5F5"/>
+            <Setter Property="Background" Value="White"/>
         </Style>
+
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Background" Value="#2D2D2D"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#2D2D2D"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#D0D0D0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        
     </Window.Resources>
 
     <Grid Margin="30">
@@ -44,24 +67,71 @@
                     Opacity="0.6"
                     Margin="0,4,0,0"/>
             </StackPanel>
-
-            <StackPanel
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center">
-
-                <TextBlock
-                    Text="● Monitoring"
-                    FontSize="14"
-                    Visibility="{Binding IsMonitoring, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-
-                <TextBlock
-                    Text="○ Stopped"
-                    FontSize="14"
-                    Visibility="{Binding IsMonitoring, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
-
-            </StackPanel>
         </Grid>
 
+        <Grid
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="15"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- SI-300D -->
+            <Border
+                Grid.Column="0"
+                Width="70"
+                Height="50"
+                CornerRadius="15"
+                Background="White">
+
+                <Grid>
+
+                    <!-- Closed eyes -->
+                    <StackPanel
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Visibility="{Binding IsMonitoring, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+
+                        <TextBlock
+                            Text="—"
+                            FontSize="18"
+                            FontWeight="Bold"
+                            Margin="0,0,12,0"/>
+
+                        <TextBlock
+                            Text="—"
+                            FontSize="18"
+                            FontWeight="Bold"/>
+
+                    </StackPanel>
+
+                    <!-- Open eyes -->
+                    <StackPanel
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Visibility="{Binding IsMonitoring, Converter={StaticResource BooleanToVisibilityConverter}}">
+
+                        <TextBlock
+                            Text="●"
+                            FontSize="12"
+                            Margin="0,0,15,0"/>
+
+                        <TextBlock
+                            Text="●"
+                            FontSize="12"/>
+
+                    </StackPanel>
+
+                </Grid>
+
+            </Border>
+        </Grid>
+        
         <!-- Main Content -->
         <Grid Grid.Row="1" Margin="0,30">
 
@@ -137,9 +207,9 @@
 
             <!-- Interface -->
             <Border
-    Grid.Row="1"
-    Style="{StaticResource CardStyle}"
-    Margin="0,20,0,0">
+                Grid.Row="1"
+                Style="{StaticResource CardStyle}"
+                Margin="0,20,0,0">
 
                 <Grid>
 
@@ -187,7 +257,7 @@
                         HorizontalAlignment="Right">
 
                         <TextBlock
-                            Text="● Connected"
+                            Text="{Binding InterfaceStatusDisplay}"
                             FontSize="14"
                             HorizontalAlignment="Right"/>
 
@@ -208,13 +278,15 @@
             <Button
                 Content="Start Monitoring"
                 Click="StartMonitoring_Click"
-                Padding="20,10"
+                IsEnabled="{Binding CanStartMonitoring}"
+                Style="{StaticResource PrimaryButtonStyle}"
                 Margin="0,0,10,0"/>
 
             <Button
                 Content="Stop Monitoring"
                 Click="StopMonitoring_Click"
-                Padding="20,10"/>
+                IsEnabled="{Binding CanStopMonitoring}"
+                Style="{StaticResource SecondaryButtonStyle}"/>
 
         </StackPanel>
 
