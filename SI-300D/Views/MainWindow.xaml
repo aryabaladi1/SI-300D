@@ -15,6 +15,11 @@
         <converters:InverseBooleanToVisibilityConverter
         x:Key="InverseBooleanToVisibilityConverter"/>
 
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="25"/>
+            <Setter Property="Background" Value="#F5F5F5"/>
+        </Style>
     </Window.Resources>
 
     <Grid Margin="30">
@@ -75,12 +80,14 @@
 
                 <Border
                     Grid.Column="0"
-                    Padding="25">
+                    Style="{StaticResource CardStyle}">
 
                     <StackPanel>
+
                         <TextBlock
-                            Text="DOWNLOAD"
+                            Text="↓ DOWNLOAD"
                             FontSize="13"
+                            FontWeight="SemiBold"
                             Opacity="0.6"/>
 
                         <TextBlock
@@ -88,18 +95,27 @@
                             FontSize="32"
                             FontWeight="SemiBold"
                             Margin="0,8,0,0"/>
+
+                        <TextBlock
+                            Text="Current speed"
+                            FontSize="12"
+                            Opacity="0.5"
+                            Margin="0,4,0,0"/>
+
                     </StackPanel>
 
                 </Border>
 
                 <Border
                     Grid.Column="2"
-                    Padding="25">
+                    Style="{StaticResource CardStyle}">
 
                     <StackPanel>
+
                         <TextBlock
-                            Text="UPLOAD"
+                            Text="↑ UPLOAD"
                             FontSize="13"
+                            FontWeight="SemiBold"
                             Opacity="0.6"/>
 
                         <TextBlock
@@ -107,6 +123,13 @@
                             FontSize="32"
                             FontWeight="SemiBold"
                             Margin="0,8,0,0"/>
+
+                        <TextBlock
+                            Text="Current speed"
+                            FontSize="12"
+                            Opacity="0.5"
+                            Margin="0,4,0,0"/>
+
                     </StackPanel>
 
                 </Border>
