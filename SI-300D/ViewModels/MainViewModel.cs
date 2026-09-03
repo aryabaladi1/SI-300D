@@ -16,6 +16,16 @@ namespace SI_300D.ViewModels
 
         public double UploadBytesPerSecond { get; private set; }
 
+        public string InterfaceName { get; private set; } = string.Empty;
+
+        public string InterfaceStatus { get; private set; } = string.Empty;
+
+        public string InterfaceType { get; private set; } = string.Empty;
+
+        public long InterfaceSpeed { get; private set; }
+
+        public bool IsMonitoring { get; private set; }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public MainViewModel()
@@ -26,14 +36,25 @@ namespace SI_300D.ViewModels
                 .GetAllNetworkInterfaces()
                 .FirstOrDefault(networkInterface =>
                     networkInterface.OperationalStatus == OperationalStatus.Up);
+
+            if (_networkInterface is not null)
+            {
+                InterfaceName = _networkInterface.Name;
+                InterfaceStatus = _networkInterface.OperationalStatus.ToString();
+                InterfaceType = _networkInterface.NetworkInterfaceType.ToString();
+                InterfaceSpeed = _networkInterface.Speed;
+            }
         }
 
         public async Task StartMonitoringAsync()
         {
-            if (_networkInterface is null)
+            if (_networkInterface is null || IsMonitoring)
                 return;
 
             _monitoringCancellation = new CancellationTokenSource();
+
+            IsMonitoring = true;
+            OnPropertyChanged(nameof(IsMonitoring));
 
             try
             {
@@ -56,7 +77,13 @@ namespace SI_300D.ViewModels
 
         public void StopMonitoring()
         {
+            if (!IsMonitoring)
+                return;
+
             _monitoringCancellation?.Cancel();
+
+            IsMonitoring = false;
+            OnPropertyChanged(nameof(IsMonitoring));
         }
 
         private void OnPropertyChanged(string propertyName)
