@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:converters="clr-namespace:SI_300D.Converters"
         Title="SI-300D"
-        Height="600"
+        Height="800"
         Width="1000"
         MinHeight="500"
         MinWidth="800"
@@ -138,6 +138,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <!-- Traffic -->
@@ -267,6 +268,64 @@
 
             </Border>
 
+            <Border
+                Grid.Row="2"
+                Style="{StaticResource CardStyle}"
+                Margin="0,20,0,0">
+
+                <Grid>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock
+                        Grid.Row="0"
+                        Text="ACTIVE TCP CONNECTIONS"
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        Opacity="0.6"
+                        Margin="0,0,0,15"/>
+
+                    <DataGrid
+                        Grid.Row="1"
+                        ItemsSource="{Binding TcpConnections}"
+                        AutoGenerateColumns="False"
+                        IsReadOnly="True"
+                        HeadersVisibility="Column"
+                        CanUserAddRows="False"
+                        BorderThickness="0">
+
+                        <DataGrid.Columns>
+
+                            <DataGridTextColumn
+                                Header="Local Address"
+                                Binding="{Binding LocalAddress}"/>
+
+                            <DataGridTextColumn
+                                Header="Local Port"
+                                Binding="{Binding LocalPort}"/>
+
+                            <DataGridTextColumn
+                                Header="Remote Address"
+                                Binding="{Binding RemoteAddress}"/>
+
+                            <DataGridTextColumn
+                                Header="Remote Port"
+                                Binding="{Binding RemotePort}"/>
+
+                            <DataGridTextColumn
+                                Header="State"
+                                Binding="{Binding State}"/>
+
+                        </DataGrid.Columns>
+
+                    </DataGrid>
+
+                </Grid>
+
+            </Border>
         </Grid>
 
         <!-- Controls -->

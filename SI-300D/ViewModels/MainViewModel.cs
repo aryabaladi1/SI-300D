@@ -1,4 +1,6 @@
-﻿using SI_300D.Services;
+﻿using SI_300D.Models;
+using SI_300D.Services;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Net.NetworkInformation;
 
@@ -9,6 +11,7 @@ namespace SI_300D.ViewModels
         private readonly NetworkStatisticsService _networkStatisticsService;
         private readonly NetworkInterface? _networkInterface;
         private CancellationTokenSource? _monitoringCancellation;
+        private readonly TcpConnectionService _tcpConnectionService;
 
         public string ApplicationName => "SI-300D";
 
@@ -40,14 +43,16 @@ namespace SI_300D.ViewModels
 
         public string InterfaceStatusDisplay => InterfaceStatus == "Up" ? "● Connected" : "○ Disconnected";
 
+        public ObservableCollection<TcpConnection> TcpConnections { get; } = new();
+
         public MainViewModel()
         {
             _networkStatisticsService = new NetworkStatisticsService();
-
             _networkInterface = NetworkInterface
                 .GetAllNetworkInterfaces()
                 .FirstOrDefault(networkInterface =>
                     networkInterface.OperationalStatus == OperationalStatus.Up);
+            _tcpConnectionService = new TcpConnectionService();
 
             if (_networkInterface is not null)
             {
@@ -85,6 +90,8 @@ namespace SI_300D.ViewModels
 
                     OnPropertyChanged(nameof(UploadBytesPerSecond));
                     OnPropertyChanged(nameof(UploadSpeed));
+
+                    RefreshTcpConnections();
                 }
             }
             catch (OperationCanceledException)
@@ -105,6 +112,18 @@ namespace SI_300D.ViewModels
             OnPropertyChanged(nameof(IsMonitoring));
             OnPropertyChanged(nameof(CanStartMonitoring));
             OnPropertyChanged(nameof(CanStopMonitoring));
+        }
+
+        public void RefreshTcpConnections()
+        {
+            var connections = _tcpConnectionService.GetActiveConnections();
+
+            TcpConnections.Clear();
+
+            foreach (var connection in connections)
+            {
+                TcpConnections.Add(connection);
+            }
         }
 
         private void OnPropertyChanged(string propertyName)
