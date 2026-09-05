@@ -1,8 +1,6 @@
-﻿using System.Net.NetworkInformation;
-
-namespace SI_300D.Models
+﻿namespace SI_300D.Models
 {
-    public class TcpConnection
+    public class TcpTableEntry
     {
         public string LocalAddress { get; set; } = string.Empty;
 
@@ -12,10 +10,8 @@ namespace SI_300D.Models
 
         public int RemotePort { get; set; }
 
-        public TcpState State { get; set; }
+        public uint State { get; set; }
 
         public uint ProcessId { get; set; }
-
-        public string ProcessName { get; set; } = string.Empty;
     }
 }

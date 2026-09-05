@@ -1,7 +1,9 @@
 ﻿using SI_300D.Models;
 using SI_300D.Services;
+using SI_300D.Services.Windows;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Net.NetworkInformation;
 
 namespace SI_300D.ViewModels
