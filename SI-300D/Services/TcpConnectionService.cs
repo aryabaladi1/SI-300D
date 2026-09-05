@@ -7,10 +7,12 @@ namespace SI_300D.Services
     public class TcpConnectionService
     {
         private readonly TcpTableService _tcpTableService;
+        private readonly ProcessService _processService;
 
         public TcpConnectionService()
         {
             _tcpTableService = new TcpTableService();
+            _processService = new ProcessService();
         }
 
         public List<TcpConnection> GetActiveConnections()
@@ -21,6 +23,8 @@ namespace SI_300D.Services
 
             foreach (var entry in entries)
             {
+                var processName = _processService.GetProcessName(entry.ProcessId);
+
                 connections.Add(new TcpConnection
                 {
                     LocalAddress = entry.LocalAddress,
@@ -28,7 +32,8 @@ namespace SI_300D.Services
                     RemoteAddress = entry.RemoteAddress,
                     RemotePort = entry.RemotePort,
                     State = (TcpState)entry.State,
-                    ProcessId = entry.ProcessId
+                    ProcessId = entry.ProcessId,
+                    ProcessName = processName
                 });
             }
 
