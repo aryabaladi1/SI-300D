@@ -295,29 +295,46 @@
                         IsReadOnly="True"
                         HeadersVisibility="Column"
                         CanUserAddRows="False"
-                        BorderThickness="0">
+                        BorderThickness="0"
+                        GridLinesVisibility="Horizontal"
+                        HorizontalGridLinesBrush="#EEEEEE">
 
                         <DataGrid.Columns>
 
                             <DataGridTextColumn
+                                Header="Process"
+                                Binding="{Binding ProcessName}"
+                                Width="1.2*"/>
+
+                            <DataGridTextColumn
+                                Header="PID"
+                                Binding="{Binding ProcessId}"
+                                Width="70"/>
+
+                            <DataGridTextColumn
                                 Header="Local Address"
-                                Binding="{Binding LocalAddress}"/>
+                                Binding="{Binding LocalAddress}"
+                                Width="1.3*"/>
 
                             <DataGridTextColumn
                                 Header="Local Port"
-                                Binding="{Binding LocalPort}"/>
+                                Binding="{Binding LocalPort}"
+                                Width="80"/>
 
                             <DataGridTextColumn
                                 Header="Remote Address"
-                                Binding="{Binding RemoteAddress}"/>
+                                Binding="{Binding RemoteAddress}"
+                                Width="1.3*"/>
 
                             <DataGridTextColumn
                                 Header="Remote Port"
-                                Binding="{Binding RemotePort}"/>
+                                Binding="{Binding RemotePort}"
+                                Width="80"/>
 
                             <DataGridTextColumn
                                 Header="State"
-                                Binding="{Binding State}"/>
+                                Binding="{Binding State}"
+                                Width="110"/>
 
                         </DataGrid.Columns>
 
