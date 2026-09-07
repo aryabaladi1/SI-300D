@@ -57,6 +57,25 @@ namespace SI_300D.ViewModels
 
         public ObservableCollection<TcpConnection> TcpConnections { get; } = new();
 
+        public ObservableCollection<TcpConnection> FilteredTcpConnections { get; } = new();
+
+        private string _searchText = string.Empty;
+
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                if (_searchText == value)
+                    return;
+
+                _searchText = value;
+
+                OnPropertyChanged(nameof(SearchText));
+
+                FilterTcpConnections();
+            }
+        }
         public MainViewModel()
         {
             _networkStatisticsService = new NetworkStatisticsService();
@@ -194,6 +213,8 @@ namespace SI_300D.ViewModels
             {
                 TcpConnections.Add(connection);
             }
+
+            FilterTcpConnections();
         }
 
         private void UpdateInterfaceInformation(
@@ -259,6 +280,63 @@ namespace SI_300D.ViewModels
 
             return
                 $"{bitsPerSecond / 1_000_000_000.0:N1} Gbps";
+        }
+
+        private void FilterTcpConnections()
+        {
+            FilteredTcpConnections.Clear();
+
+            if (string.IsNullOrWhiteSpace(SearchText))
+            {
+                foreach (var connection in TcpConnections)
+                {
+                    FilteredTcpConnections.Add(connection);
+                }
+
+                return;
+            }
+
+            var searchText = SearchText.Trim();
+
+            foreach (var connection in TcpConnections)
+            {
+                if (MatchesSearch(connection, searchText))
+                {
+                    FilteredTcpConnections.Add(connection);
+                }
+            }
+        }
+
+        private static bool MatchesSearch(TcpConnection connection, string searchText)
+        {
+            return
+                connection.ProcessName.Contains(
+                    searchText,
+                    StringComparison.OrdinalIgnoreCase)
+
+                || connection.ProcessId
+                    .ToString()
+                    .Contains(searchText, StringComparison.OrdinalIgnoreCase)
+
+                || connection.LocalAddress.Contains(
+                    searchText,
+                    StringComparison.OrdinalIgnoreCase)
+
+                || connection.LocalPort
+                    .ToString()
+                    .Contains(searchText, StringComparison.OrdinalIgnoreCase)
+
+                || connection.RemoteAddress.Contains(
+                    searchText,
+                    StringComparison.OrdinalIgnoreCase)
+
+                || connection.RemotePort
+                    .ToString()
+                    .Contains(searchText, StringComparison.OrdinalIgnoreCase)
+
+                || connection.State
+                    .ToString()
+                    .Contains(searchText, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

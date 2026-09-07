@@ -340,17 +340,31 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock
+                    <Grid
                         Grid.Row="0"
-                        Text="ACTIVE TCP CONNECTIONS"
-                        FontSize="13"
-                        FontWeight="SemiBold"
-                        Opacity="0.6"
-                        Margin="0,0,0,10"/>
+                        Margin="0,0,0,10">
+
+                        <TextBlock
+                            Text="ACTIVE TCP CONNECTIONS"
+                            FontSize="13"
+                            FontWeight="SemiBold"
+                            Opacity="0.6"
+                            VerticalAlignment="Center"/>
+
+                        <TextBox
+                            Width="220"
+                            Height="32"
+                            HorizontalAlignment="Right"
+                            VerticalContentAlignment="Center"
+                            Padding="10,0"
+                            FontSize="13"
+                            Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    </Grid>
 
                     <DataGrid
                         Grid.Row="1"
-                        ItemsSource="{Binding TcpConnections}"
+                        ItemsSource="{Binding FilteredTcpConnections}"
                         Style="{StaticResource NetworkDataGridStyle}">
 
                         <DataGrid.Columns>
