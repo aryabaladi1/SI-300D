@@ -351,14 +351,26 @@
                             Opacity="0.6"
                             VerticalAlignment="Center"/>
 
-                        <TextBox
-                            Width="220"
-                            Height="32"
-                            HorizontalAlignment="Right"
-                            VerticalContentAlignment="Center"
-                            Padding="10,0"
-                            FontSize="13"
-                            Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+                        <StackPanel
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right">
+
+                            <TextBlock
+                                Text="Search:"
+                                FontSize="13"
+                                Opacity="0.6"
+                                VerticalAlignment="Center"
+                                Margin="0,0,10,0"/>
+
+                            <TextBox
+                                Width="220"
+                                Height="32"
+                                VerticalContentAlignment="Center"
+                                Padding="10,0"
+                                FontSize="13"
+                                Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        </StackPanel>
 
                     </Grid>
 
