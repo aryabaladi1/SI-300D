@@ -1,9 +1,7 @@
 ﻿using SI_300D.Models;
 using SI_300D.Services;
-using SI_300D.Services.Windows;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Net.NetworkInformation;
 
 namespace SI_300D.ViewModels
@@ -11,9 +9,11 @@ namespace SI_300D.ViewModels
     public class MainViewModel : INotifyPropertyChanged
     {
         private readonly NetworkStatisticsService _networkStatisticsService;
-        private readonly NetworkInterface? _networkInterface;
-        private CancellationTokenSource? _monitoringCancellation;
+        private readonly NetworkInterfaceService _networkInterfaceService;
         private readonly TcpConnectionService _tcpConnectionService;
+
+        private NetworkInterface? _selectedNetworkInterface;
+        private CancellationTokenSource? _monitoringCancellation;
 
         public string ApplicationName => "SI-300D";
 
@@ -29,6 +29,10 @@ namespace SI_300D.ViewModels
 
         public long InterfaceSpeed { get; private set; }
 
+        public ObservableCollection<NetworkInterfaceInfo> NetworkInterfaces { get; } = new();
+
+        public NetworkInterfaceInfo? SelectedNetworkInterface { get; private set; }
+
         public bool IsMonitoring { get; private set; }
 
         public bool CanStartMonitoring => !IsMonitoring;
@@ -37,37 +41,54 @@ namespace SI_300D.ViewModels
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public string DownloadSpeed => FormatBytesPerSecond(DownloadBytesPerSecond);
+        public string DownloadSpeed =>
+            FormatBytesPerSecond(DownloadBytesPerSecond);
 
-        public string UploadSpeed => FormatBytesPerSecond(UploadBytesPerSecond);
+        public string UploadSpeed =>
+            FormatBytesPerSecond(UploadBytesPerSecond);
 
-        public string InterfaceSpeedDisplay => FormatBitsPerSecond(InterfaceSpeed);
+        public string InterfaceSpeedDisplay =>
+            FormatBitsPerSecond(InterfaceSpeed);
 
-        public string InterfaceStatusDisplay => InterfaceStatus == "Up" ? "● Connected" : "○ Disconnected";
+        public string InterfaceStatusDisplay =>
+            InterfaceStatus == "Up"
+                ? "● Connected"
+                : "○ Disconnected";
 
         public ObservableCollection<TcpConnection> TcpConnections { get; } = new();
 
         public MainViewModel()
         {
             _networkStatisticsService = new NetworkStatisticsService();
-            _networkInterface = NetworkInterface
-                .GetAllNetworkInterfaces()
-                .FirstOrDefault(networkInterface =>
-                    networkInterface.OperationalStatus == OperationalStatus.Up);
+            _networkInterfaceService = new NetworkInterfaceService();
             _tcpConnectionService = new TcpConnectionService();
 
-            if (_networkInterface is not null)
+            var networkInterfaces =
+                _networkInterfaceService.GetNetworkInterfaces();
+
+            foreach (var networkInterface in networkInterfaces)
             {
-                InterfaceName = _networkInterface.Name;
-                InterfaceStatus = _networkInterface.OperationalStatus.ToString();
-                InterfaceType = _networkInterface.NetworkInterfaceType.ToString();
-                InterfaceSpeed = _networkInterface.Speed;
+                NetworkInterfaces.Add(networkInterface);
+            }
+
+            var selectedInterface = NetworkInterfaces
+                .FirstOrDefault(networkInterface =>
+                    networkInterface.Status == "Up");
+
+            if (selectedInterface is not null)
+            {
+                SelectedNetworkInterface = selectedInterface;
+
+                _selectedNetworkInterface =
+                    GetNetworkInterface(selectedInterface.Id);
+
+                UpdateInterfaceInformation(selectedInterface);
             }
         }
 
         public async Task StartMonitoringAsync()
         {
-            if (_networkInterface is null || IsMonitoring)
+            if (_selectedNetworkInterface is null || IsMonitoring)
                 return;
 
             _monitoringCancellation = new CancellationTokenSource();
@@ -80,25 +101,35 @@ namespace SI_300D.ViewModels
 
             try
             {
-                await foreach (var statistics in _networkStatisticsService.MonitorAsync(
-                    _networkInterface,
-                    _monitoringCancellation.Token))
+                await foreach (var statistics in
+                    _networkStatisticsService.MonitorAsync(
+                        _selectedNetworkInterface,
+                        _monitoringCancellation.Token))
                 {
-                    DownloadBytesPerSecond = statistics.DownloadBytesPerSecond;
-                    UploadBytesPerSecond = statistics.UploadBytesPerSecond;
+                    DownloadBytesPerSecond =
+                        statistics.DownloadBytesPerSecond;
 
-                    OnPropertyChanged(nameof(DownloadBytesPerSecond));
-                    OnPropertyChanged(nameof(DownloadSpeed));
+                    UploadBytesPerSecond =
+                        statistics.UploadBytesPerSecond;
 
-                    OnPropertyChanged(nameof(UploadBytesPerSecond));
-                    OnPropertyChanged(nameof(UploadSpeed));
+                    OnPropertyChanged(
+                        nameof(DownloadBytesPerSecond));
+
+                    OnPropertyChanged(
+                        nameof(DownloadSpeed));
+
+                    OnPropertyChanged(
+                        nameof(UploadBytesPerSecond));
+
+                    OnPropertyChanged(
+                        nameof(UploadSpeed));
 
                     RefreshTcpConnections();
                 }
             }
             catch (OperationCanceledException)
             {
-                // ayo :3
+                // Monitoring was stopped intentionally.
             }
         }
 
@@ -116,9 +147,46 @@ namespace SI_300D.ViewModels
             OnPropertyChanged(nameof(CanStopMonitoring));
         }
 
+        public void SelectNetworkInterface(
+            NetworkInterfaceInfo networkInterface)
+        {
+            if (IsMonitoring)
+                return;
+
+            var selectedInterface =
+                GetNetworkInterface(networkInterface.Id);
+
+            if (selectedInterface is null)
+                return;
+
+            SelectedNetworkInterface = networkInterface;
+            _selectedNetworkInterface = selectedInterface;
+
+            DownloadBytesPerSecond = 0;
+            UploadBytesPerSecond = 0;
+
+            OnPropertyChanged(
+                nameof(SelectedNetworkInterface));
+
+            OnPropertyChanged(
+                nameof(DownloadBytesPerSecond));
+
+            OnPropertyChanged(
+                nameof(DownloadSpeed));
+
+            OnPropertyChanged(
+                nameof(UploadBytesPerSecond));
+
+            OnPropertyChanged(
+                nameof(UploadSpeed));
+
+            UpdateInterfaceInformation(networkInterface);
+        }
+
         public void RefreshTcpConnections()
         {
-            var connections = _tcpConnectionService.GetActiveConnections();
+            var connections =
+                _tcpConnectionService.GetActiveConnections();
 
             TcpConnections.Clear();
 
@@ -128,6 +196,32 @@ namespace SI_300D.ViewModels
             }
         }
 
+        private void UpdateInterfaceInformation(
+            NetworkInterfaceInfo networkInterface)
+        {
+            InterfaceName = networkInterface.Name;
+            InterfaceStatus = networkInterface.Status;
+            InterfaceType = networkInterface.Type;
+            InterfaceSpeed = networkInterface.Speed;
+
+            OnPropertyChanged(nameof(InterfaceName));
+            OnPropertyChanged(nameof(InterfaceStatus));
+            OnPropertyChanged(nameof(InterfaceType));
+            OnPropertyChanged(nameof(InterfaceSpeed));
+
+            OnPropertyChanged(nameof(InterfaceSpeedDisplay));
+            OnPropertyChanged(nameof(InterfaceStatusDisplay));
+        }
+
+        private static NetworkInterface? GetNetworkInterface(
+            string id)
+        {
+            return NetworkInterface
+                .GetAllNetworkInterfaces()
+                .FirstOrDefault(networkInterface =>
+                    networkInterface.Id == id);
+        }
+
         private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(
@@ -135,7 +229,8 @@ namespace SI_300D.ViewModels
                 new PropertyChangedEventArgs(propertyName));
         }
 
-        private static string FormatBytesPerSecond(double bytesPerSecond)
+        private static string FormatBytesPerSecond(
+            double bytesPerSecond)
         {
             if (bytesPerSecond < 1024)
                 return $"{bytesPerSecond:N0} B/s";
@@ -146,10 +241,12 @@ namespace SI_300D.ViewModels
             if (bytesPerSecond < 1024 * 1024 * 1024)
                 return $"{bytesPerSecond / (1024 * 1024):N1} MB/s";
 
-            return $"{bytesPerSecond / (1024 * 1024 * 1024):N1} GB/s";
+            return
+                $"{bytesPerSecond / (1024 * 1024 * 1024):N1} GB/s";
         }
 
-        private static string FormatBitsPerSecond(long bitsPerSecond)
+        private static string FormatBitsPerSecond(
+            long bitsPerSecond)
         {
             if (bitsPerSecond < 1_000)
                 return $"{bitsPerSecond:N0} bps";
@@ -160,7 +257,8 @@ namespace SI_300D.ViewModels
             if (bitsPerSecond < 1_000_000_000)
                 return $"{bitsPerSecond / 1_000_000.0:N1} Mbps";
 
-            return $"{bitsPerSecond / 1_000_000_000.0:N1} Gbps";
+            return
+                $"{bitsPerSecond / 1_000_000_000.0:N1} Gbps";
         }
     }
 }

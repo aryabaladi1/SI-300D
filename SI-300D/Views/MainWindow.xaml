@@ -220,8 +220,46 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
+            <!-- Interface Selector -->
+            <Grid Grid.Row="0" Margin="0,0,0,15">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="15"/>
+                    <ColumnDefinition Width="180"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Grid.Column="0"
+                    Text="INTERFACE"
+                    FontSize="12"
+                    FontWeight="SemiBold"
+                    Opacity="0.6"
+                    VerticalAlignment="Center"/>
+
+                <ComboBox
+                    Grid.Column="2"
+                    Width="180"
+                    Height="32"
+                    VerticalContentAlignment="Center"
+                    ItemsSource="{Binding NetworkInterfaces}"
+                    SelectedItem="{Binding SelectedNetworkInterface, Mode=OneWay}"
+                    DisplayMemberPath="Name"
+                    IsEnabled="{Binding CanStartMonitoring}"
+                    SelectionChanged="InterfaceSelector_SelectionChanged"/>
+
+                <TextBlock
+                    Grid.Column="4"
+                    Text="{Binding InterfaceStatusDisplay}"
+                    FontSize="13"
+                    VerticalAlignment="Center"/>
+
+            </Grid>
+            
             <!-- Traffic -->
-            <Grid Grid.Row="0">
+            <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="20"/>
@@ -285,72 +323,10 @@
                 </Border>
             </Grid>
 
-            <!-- Interface -->
-            <Border
-                Grid.Row="1"
-                Style="{StaticResource CardStyle}"
-                Margin="0,15,0,0">
-
-                <Grid>
-
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <StackPanel Grid.Column="0">
-
-                        <TextBlock
-                            Text="NETWORK INTERFACE"
-                            FontSize="13"
-                            FontWeight="SemiBold"
-                            Opacity="0.6"/>
-
-                        <TextBlock
-                            Text="{Binding InterfaceName}"
-                            FontSize="22"
-                            FontWeight="SemiBold"
-                            Margin="0,6,0,0"/>
-
-                        <TextBlock
-                            Text="{Binding InterfaceType}"
-                            FontSize="14"
-                            Opacity="0.6"
-                            Margin="0,2,0,0"/>
-
-                        <TextBlock
-                            Text="Link speed"
-                            FontSize="12"
-                            Opacity="0.5"
-                            Margin="0,10,0,0"/>
-
-                        <TextBlock
-                            Text="{Binding InterfaceSpeedDisplay}"
-                            FontSize="18"
-                            FontWeight="SemiBold"
-                            Margin="0,1,0,0"/>
-
-                    </StackPanel>
-
-                    <StackPanel
-                        Grid.Column="1"
-                        HorizontalAlignment="Right">
-
-                        <TextBlock
-                            Text="{Binding InterfaceStatusDisplay}"
-                            FontSize="14"
-                            HorizontalAlignment="Right"/>
-
-                    </StackPanel>
-
-                </Grid>
-
-            </Border>
-
             <Border
                 Grid.Row="2"
                 Style="{StaticResource CardStyle}"
-                Margin="0,20,0,0">
+                Margin="0,15,0,0">
 
                 <Grid>
 
