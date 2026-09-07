@@ -12,6 +12,7 @@ namespace SI_300D.Services
             return networkInterfaces
                 .Select(networkInterface => new NetworkInterfaceInfo
                 {
+                    Id = networkInterface.Id,
                     Name = networkInterface.Name,
                     Description = networkInterface.Description,
                     Type = networkInterface.NetworkInterfaceType.ToString(),
