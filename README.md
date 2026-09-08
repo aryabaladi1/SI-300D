@@ -22,9 +22,9 @@ SI-300D provides a simple real-time view of network traffic and active TCP conne
 
 ## Screenshots
 
-![SI-300D Monitoring](docs/Screenshot-2.png)
+![SI-300D Monitoring](SI-300D/docs/Screenshot-2.png)
 
-![SI-300D Not Monitoring](docs/Screenshot-1.png)
+![SI-300D Not Monitoring](SI-300D/docs/Screenshot-1.png)
 
 ## Tech Stack
 
