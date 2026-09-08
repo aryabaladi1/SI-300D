@@ -4,8 +4,6 @@ A lightweight Windows network monitoring dashboard built with **C# and WPF**.
 
 SI-300D provides a simple real-time view of network traffic and active TCP connections, including the processes responsible for those connections.
 
-> Built as a hands-on project to explore Windows networking APIs, P/Invoke, asynchronous monitoring, and WPF application development.
-
 ## Features
 
 - Real-time upload and download speed monitoring
