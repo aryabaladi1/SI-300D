@@ -20,6 +20,12 @@ SI-300D provides a simple real-time view of network traffic and active TCP conne
 - Start / stop monitoring
 - Clean, responsive WPF dashboard
 
+## Screenshots
+
+![SI-300D Monitoring](docs/Screenshot-2.png)
+
+![SI-300D Not Monitoring](docs/Screenshot-1.png)
+
 ## Tech Stack
 
 - **C# / .NET 8**
@@ -28,11 +34,6 @@ SI-300D provides a simple real-time view of network traffic and active TCP conne
 - **MVVM**
 - **Windows IP Helper API**
 - **P/Invoke**
-- `System.Net.NetworkInformation`
-- `System.Diagnostics`
-- `IAsyncEnumerable`
-- `PeriodicTimer`
-- `CancellationToken`
 
 ## How It Works
 
